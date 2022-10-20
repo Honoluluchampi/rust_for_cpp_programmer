@@ -9,7 +9,7 @@ fn main() {
     for stream in listener.incoming() {
         println!("connecting...");
         let stream = stream.unwrap();
-        println!("Connection established!");
+        println!("connection established!");
 
         handle_connection(stream);
     }
@@ -17,10 +17,14 @@ fn main() {
 
 fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&mut stream);
-    let http_request: Vec<_> = buf_reader
+    let _http_request: Vec<_> = buf_reader
       .lines()
       .map(|result| result.unwrap())
       .take_while(|line| !line.is_empty())
       .collect();
-    println!("Request: {:#?}", http_request);
+
+    let response = "HTTP/1.1 200 OK\r\n\r\n";
+
+    // http protocol requires sending data to be byte-format
+    stream.write_all(response.as_bytes()).unwrap();
 }
